@@ -123,7 +123,7 @@ UI.TexturePackerSettings = wx.wxDialog (wx.NULL, wx.wxID_ANY, "Texture Packer Se
 	
 	UI.bPixelFormat:Add( UI.m_staticText21, 0, wx.wxALL + wx.wxALIGN_CENTER_VERTICAL, 5 )
 	
-	UI.m_pixelFormatChoices = { "RBGA8888", "RGBA4444", "RGB888", "RGB565" }
+	UI.m_pixelFormatChoices = { "RGBA8888", "RGBA4444", "RGB888", "RGB565" }
 	UI.m_pixelFormat = wx.wxChoice( UI.TexturePackerSettings, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxDefaultSize, UI.m_pixelFormatChoices, 0 )
 	UI.m_pixelFormat:SetSelection( 0 )
 	UI.bPixelFormat:Add( UI.m_pixelFormat, 1, wx.wxALL, 5 )

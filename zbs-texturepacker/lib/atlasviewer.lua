@@ -56,7 +56,7 @@ local function getPages(atlasPath)
   
   local blankCount = 0
   local pages = {}
-  local basePath = wx.wxFileName(atlasPath):GetPath()
+  local basePath = wx.wxFileName(atlasPath):GetPath(wx.wxPATH_GET_VOLUME)
   
   for line in io.lines(atlasPath) do 
     if line == "" then

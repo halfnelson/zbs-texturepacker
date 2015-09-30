@@ -162,6 +162,7 @@ local ProjectManager = {
 
 function Project:makeRelative(name)
   local dir = wx.wxFileName.DirName(name)
+  dir:MakeAbsolute(self.ProjectDir)
   dir:MakeRelativeTo(self.ProjectDir)
   return dir:GetFullPath(wx.wxPATH_UNIX)
 end
@@ -236,12 +237,11 @@ function Project:savePackerConfig(dir, config)
    local parentConfig = self:getParentConfig(dir)
    local empty = true
    for k,v in pairs(config) do
-    if not parentConfig[k] == v then
+    if parentConfig[k] ~= v then
       diff[k] = v
       empty = false
     end
    end
-   
    if not empty then
      local content = dodgyTableToJson(diff)
      fileWrite(dir..getPathSeparator().."pack.json", content)
@@ -354,7 +354,7 @@ end
 
 function Project:showAtlasFor(name)
    local conf = self.TextureAtlasDirs[self:rootTextureAtlasFolderFor(name)]
-   local dlg = require('atlasviewer')(conf.OutputFolder.."/"..conf.PackName..".atlas")
+   local dlg = require('atlasviewer')(self:makeAbsolute(conf.OutputFolder)..conf.PackName..".atlas")
    dlg:show()
 end
 
