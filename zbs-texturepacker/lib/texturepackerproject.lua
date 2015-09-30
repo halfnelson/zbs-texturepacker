@@ -343,7 +343,7 @@ function Project:packFolder(dir,outputCallback)
   if outputCallback then
     outputCallback("running cmd:"..cmd)
   end
-  local f = io.popen(cmd, 'r')
+  local f = io.popen(cmd.." 2>&1", 'r')
   while true do
     local s = f:read('*line')
     if s == nil then break end
