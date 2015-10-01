@@ -7,6 +7,7 @@ local textureMapperRemoveMenuId = ID("zbs-moai.texturemappermenuremove")
 local texturePackerConfigId = ID("zbs-moai.textureMapperConfig")
 local texturePackerLaunchId = ID("zbs-moai.texturePackerLaunch")
 local texturePackerLaunchPopupId = ID("zbs-moai.texturePackerLaunchPopup")
+local texturePackerGoId = ID("zbs-moai.texturePackerGo")
 local TEXTUREATLAS, TEXTUREATLASCONF
 
 
@@ -82,8 +83,12 @@ local function onMenuFiletree(self, menu, tree, event)
       tree:Connect(texturePackerLaunchPopupId, wx.wxEVT_COMMAND_MENU_SELECTED,
         function() 
           DisplayOutputLn("Building Texture Atlas for "..name)
-          project:packFolder(name,function(i) DisplayOutputLn(i) end)
-          project:showAtlasFor(name)
+          local ok, err = project:packFolder(name,function(i) DisplayOutputLn(i) end)
+          if ok then
+            project:showAtlasFor(name)
+          else
+              wx.wxMessageBox(err,"Texture Packer Error",wx.wxICON_ERROR)
+          end
         end)
       
       
@@ -145,7 +150,7 @@ local function onRegister ()
    --patch tree
    oldIsDirFunc = ide.filetree.projtreeCtrl.IsDirectory
    ide.filetree.projtreeCtrl.IsDirectory = function(self, item_id)
-      return ide.filetree.projtreeCtrl:GetItemImage(item_id) == 0 or ide.filetree.projtreeCtrl:GetItemImage(item_id) == TEXTUREATLAS
+      return oldIsDirFunc(self,item_id) or ide.filetree.projtreeCtrl:GetItemImage(item_id) == TEXTUREATLAS
    end
    
    
@@ -166,18 +171,39 @@ local function onRegister ()
    projectMenu:Append(texturePackerConfigId, TR("Configure Texure Packer..."), TR("Launch Texture Packer Configuration"))
    projectMenu:Connect(texturePackerConfigId, wx.wxEVT_COMMAND_MENU_SELECTED, showConfig)
    
-    projectMenu:Append( texturePackerLaunchId, TR("Execute Texture Packer"), TR("Execute Texture Packer"))
-   projectMenu:Connect( texturePackerLaunchId, wx.wxEVT_COMMAND_MENU_SELECTED, 
-      function()
-        DisplayOutputLn("Running Texture Packer...")
-        project:packAll(function(i) DisplayOutputLn(i) end)
-      end
-     )
+   
+   local function executeTexturePacker()
+      DisplayOutputLn("Running Texture Packer...")
+        
+        local ok, err =  project:packAll(function(i) DisplayOutputLn(i) end)
+        
+        if not ok then
+          wx.wxMessageBox(err,"Texture Packer Error",wx.wxICON_ERROR)
+        end
+   end
+   
+   
+   projectMenu:Append( texturePackerLaunchId, TR("Execute Texture Packer"), TR("Execute Texture Packer"))
+   projectMenu:Connect( texturePackerLaunchId, wx.wxEVT_COMMAND_MENU_SELECTED, executeTexturePacker)
    
   
     --TODO add toolbar icon to repack using toolBar:AddTool(id, "", bitmap, TR("description")) use GetWidth on bmp from GetBitmap from ide.frame.toolbar
     --image can be 24 or 16
-   
+    local tb = ide:GetToolBar() 
+    local size = tb:GetToolBitmapSize()
+    local width = size:GetWidth()
+    local bmp
+    if (width == 24) then
+      bmp = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLASGO_24.png")
+    else
+      bmp = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLASGO.png")
+    end
+    
+
+    tb:AddTool(texturePackerGoId, "", bmp,"Build Atlases")
+
+    tb:Connect(texturePackerGoId, wx.wxEVT_COMMAND_MENU_SELECTED, executeTexturePacker)
+    tb:Realize()
 end
 
 return {
