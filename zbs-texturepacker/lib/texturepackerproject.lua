@@ -344,12 +344,26 @@ function Project:packFolder(dir,outputCallback)
     outputCallback("running cmd:"..cmd)
   end
   local f = io.popen(cmd.." 2>&1", 'r')
+  local isException = false
+  local errorMessage = ""
   while true do
     local s = f:read('*line')
     if s == nil then break end
-    if outputCallback then outputCallback(s) end
+    
+    if s:match("^Exception in thread") then
+      isException = true
+      local message = s:gsub("^Exception .-: (.-)","%1")
+      errorMessage = errorMessage..message.."\n"
+    end
+    
+    if isException and s:match("^Caused by") then
+      local message = s:gsub("^Caused by: .-: (.-)","%1")
+      errorMessage = errorMessage..message.."\n"
+    end
+
+    if (not isException) and outputCallback then outputCallback(s) end
   end
-  
+  return not isException, errorMessage
 end
 
 function Project:showAtlasFor(name)
@@ -361,10 +375,15 @@ end
 
 
 function Project:packAll(outputCallback)
+  local errors= ""
   for f,_ in pairs(self.TextureAtlasDirs) do
     outputCallback("Processing Folder "..f)
-    self:packFolder(f,outputCallback)
+    local ok, message = self:packFolder(f,outputCallback)
+    if not ok then
+      errors = errors..message.."\n"
+    end
   end
+  return errors == "", errors
 end
 
 return ProjectManager
