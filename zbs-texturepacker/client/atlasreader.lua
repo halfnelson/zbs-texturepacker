@@ -10,7 +10,7 @@ local function readTuple(line)
   
   local key = line:match("(%w+)%:")
   if not key then return false end
-  for k,_ in line:gmatch("[%:%,]+%s*(%w+)") do
+  for k,_ in line:gmatch("[%:%,]+%s*([%-%w]+)") do
     table.insert(vals, k)
   end
   return key, vals
