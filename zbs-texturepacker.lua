@@ -1,6 +1,25 @@
 
-package.path =  package.path .. ';packages/zbs-texturepacker/lib/?.lua'
-local ProjectManager = require("packages.zbs-texturepacker.lib.texturepackerproject")
+local homepath = (ide.osname == 'Windows') and os.getenv("USERPROFILE") or os.getenv("HOME")
+local zbs_package_dir = 'packages/zbs-texturepacker'
+local zbs_user_package_dir = homepath..GetPathSeparator()..'.zbstudio'..GetPathSeparator()..'packages'..GetPathSeparator()..'zbs-texturepacker'
+
+local package_root = zbs_package_dir
+if wx.wxDir.Exists(zbs_user_package_dir) then
+  package_root = zbs_user_package_dir
+end
+
+
+local package_lib = package_root..GetPathSeparator()..'lib'..GetPathSeparator()..'?.lua'
+
+
+  
+
+
+package.path =  package.path .. ';' .. package_lib
+
+
+
+local ProjectManager = require("texturepackerproject")
 
 local textureMapperMenuId = ID("zbs-moai.texturemappermenu")
 local textureMapperRemoveMenuId = ID("zbs-moai.texturemappermenuremove")
@@ -141,10 +160,10 @@ local oldIsDirFunc
 local oldExpanderFunc
 
 local function onRegister () 
-   local ico = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLAS.png")
+   local ico = wx.wxBitmap(package_root.."/res/TEXTUREATLAS.png")
    TEXTUREATLAS = ide.filetree.imglist:Add(ico)
    
-   ico = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLASCONF.png")
+   ico = wx.wxBitmap(package_root.."/res/TEXTUREATLASCONF.png")
    TEXTUREATLASCONF = ide.filetree.imglist:Add(ico)
    
    --patch tree
@@ -194,9 +213,9 @@ local function onRegister ()
     local width = size:GetWidth()
     local bmp
     if (width == 24) then
-      bmp = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLASGO_24.png")
+      bmp = wx.wxBitmap(package_root.."/res/TEXTUREATLASGO_24.png")
     else
-      bmp = wx.wxBitmap("packages/zbs-texturepacker/res/TEXTUREATLASGO.png")
+      bmp = wx.wxBitmap(package_root.."/res/TEXTUREATLASGO.png")
     end
     
 
