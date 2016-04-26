@@ -4,14 +4,6 @@ local Atlas = {}
 local Atlas_mt = { __index = Atlas }
 
 
-
-
-function Atlas:dump()
-  local serpent = require('serpent')
-  print(serpent.block(self.atlas))
-end
-
-
 function Atlas:createPage(page, pagenumber)
     local regions = page.regions
     
@@ -89,7 +81,6 @@ function Atlas:assignToProp(regionname, prop)
   local deck,idx = unpack(self.regions[regionname])
   prop:setDeck(deck)
   prop:setIndex(idx)
-  print ("assigned, ",deck,idx, "to", prop)
 end
 
 

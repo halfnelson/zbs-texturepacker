@@ -106,7 +106,6 @@ local function readAtlas(path)
       while true do
         --read region key values
         line=readLine(f)
-        print("region value",line)
         if not processKV(region,line) then break end
       end
       table.insert(page.regions, region)
