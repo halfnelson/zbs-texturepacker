@@ -322,8 +322,7 @@ end
 
 
 function Project:newAtlasAt(dir)
-  local name = self:makeRelative(dir)
-  return self:launchConfigEditor(name)
+  return self:launchConfigEditor(dir)
 end
 
 function Project:removeAtlasAt(dir)
