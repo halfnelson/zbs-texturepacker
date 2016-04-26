@@ -15,6 +15,15 @@ end
 function Atlas:createPage(page, pagenumber)
     local regions = page.regions
     
+    --sort regions heere to keep them in correct order in deck so we can animate cleanly.
+    table.sort(regions, 
+      function(a,b) 
+        if a.name < b.name then return true end
+        if a.name > b.name then return false end
+        --if same sort by index
+        return a.index < b.index
+      end)
+      
     
     --first load texture
     local texture = self.texturefunc(page.fileName)
