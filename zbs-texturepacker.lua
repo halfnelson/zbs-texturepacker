@@ -22,6 +22,7 @@ package.path =  package.path .. ';' .. package_lib
 local ProjectManager = require("texturepackerproject")
 
 local textureMapperMenuId = ID("zbs-moai.texturemappermenu")
+local textureMapperLibMenuId = ID("zbs-moai.texturemapperlibmenu")
 local textureMapperRemoveMenuId = ID("zbs-moai.texturemappermenuremove")
 local texturePackerConfigId = ID("zbs-moai.textureMapperConfig")
 local texturePackerLaunchId = ID("zbs-moai.texturePackerLaunch")
@@ -94,6 +95,18 @@ local function onMenuFiletree(self, menu, tree, event)
               tree:SetItemImage(item_id,TEXTUREATLAS)
               tree:Refresh()
             end
+        end)
+      
+      
+      menu:Append(textureMapperLibMenuId, "Install Atlas Reader Libs")
+      menu:Enable(textureMapperLibMenuId, true)
+
+      tree:Connect(textureMapperLibMenuId, wx.wxEVT_COMMAND_MENU_SELECTED,
+        function() 
+            local libpath = package_root..GetPathSeparator()..'client'
+            wx.wxCopyFile(libpath..GetPathSeparator()..'atlasreader.lua', name..GetPathSeparator()..'atlasreader.lua', false)
+            wx.wxCopyFile(libpath..GetPathSeparator()..'moaiatlas.lua', name..GetPathSeparator()..'moaiatlas.lua', false)
+            tree:Refresh()
         end)
     else
        menu:Append(texturePackerLaunchPopupId, "Build Texture Atlas")
